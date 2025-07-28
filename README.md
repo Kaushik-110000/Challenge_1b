@@ -1,67 +1,75 @@
+Here’s your updated and **complete README.md** including the **Docker run instructions** and integrating all your content under a unified structure:
+
+---
+
 # 📄 Intelligent PDF Heading Extraction & Semantic Ranking Pipeline
+
+---
 
 ## 🧠 Project Overview
 
-This project implements an end-to-end *PDF analysis pipeline* that performs:
+This project implements an end-to-end **PDF analysis pipeline** that performs:
 
-1. *Logical content extraction* from PDF documents.
-2. *Heading classification* using Graph Neural Networks (GNN).
-3. *Text embedding* using Sentence Transformers.
-4. *Semantic heading ranking* based on a user-defined persona and task.
-5. *Subsection extraction* from top-ranked headings.
+1. **Logical content extraction** from PDF documents
+2. **Heading classification** (H1–H3) using a GNN (Graph Neural Network)
+3. **Text embedding** using Sentence Transformers
+4. **Semantic heading ranking** based on a persona/task
+5. **Subsection extraction** under top-ranked headings
 
-The final output is a structured JSON containing:
+The final output is a **structured JSON** containing:
 
-* Extracted headings with predicted levels (H1, H2, H3)
-* Top-k important headings based on a given persona and job
-* A concise subsection from each top heading's content
+* 📌 Extracted headings with predicted levels (`H1`, `H2`, `H3`)
+* ⭐ Top-k important headings based on a user-defined persona and task
+* ✂ A concise subsection from each top heading's content
 
 ---
 
 ## 🚀 Use Cases
 
-* Document summarization
-* Personalized content extraction
-* Travel/event planning from PDFs
-* Resume parsing or report structuring
+* 📚 Document summarization
+* 🧑‍💻 Personalized content extraction
+* ✈ Travel/event planning from PDFs
+* 📄 Resume parsing or report structuring
 
 ---
 
 ## 📂 Project Structure
 
-
+```
 .
-├── pdfs/                    # Input PDF files
-├── preproc/                 # Intermediate embedded/heading JSONs
-├── best_model.pth           # Trained GNN classifier
-├── final_output_1B.json     # Final output with top-k sections and content
-├── your_script.py           # Main pipeline (provided code)
-└── README.md                # This file
-
+├── pdfs/                       # Input PDF files
+├── preproc/                    # Intermediate embedded/heading JSONs
+├── best_model.pth              # Trained GNN model
+├── final_output_1B.json        # Final output JSON (headings + sections)
+├── process_pdfs.py             # Batch runner
+├── process_single_pdf.py       # Core extraction logic
+├── Dockerfile                  # Docker container definition
+└── README.md                   # This file
+```
 
 ---
 
 ## 📌 Features
 
-* 📌 *PDF Parsing*: Extracts logical structure (title, paragraphs, lists, etc.) using unstructured and PyMuPDF.
-* 🧠 *GNN-Based Heading Classification*: Classifies text blocks as H1, H2, H3, or Other using GraphSAGE model.
-* 🔎 *MiniLM Embeddings*: Adds semantic understanding to text blocks with compact sentence embeddings.
-* 📊 *Semantic Ranking: Uses a user-defined persona (e.g., *Travel Planner) and objective to rank the most relevant sections.
-* ✂ *Subsection Extraction*: Retrieves a concise summary (\~50 words) of content under each top heading.
+* 📑 **PDF Parsing** using `unstructured` and `PyMuPDF`
+* 🧠 **GNN-Based Heading Classification** with `GraphSAGE`
+* 🧬 **MiniLM Embeddings** for semantic richness
+* 📊 **Semantic Ranking** using persona-based similarity
+* ✂ **Subsection Extraction** under each top-ranked heading
 
 ---
 
 ## 🛠 Dependencies
 
-Install the required libraries using:
+Install all dependencies using:
 
-bash
+```bash
 pip install -r requirements.txt
+```
 
+### `requirements.txt` should contain:
 
-**requirements.txt** (create this file with):
-
-txt
+```
 torch
 dgl
 fitz  # PyMuPDF
@@ -71,49 +79,84 @@ scikit-learn
 tqdm
 sentence-transformers
 unstructured
-
+```
 
 ---
 
-## 📥 Input
+## 📥 Input Format
 
-* *PDF files* stored in the ./pdfs directory.
+Place all **text-based** PDFs inside:
+
+```bash
+./pdfs/
+```
 
 ---
 
 ## 🧪 How It Works
 
-1. *Preprocessing & Classification*
+### 1️⃣ Preprocessing & Classification
 
-bash
+```python
 recs = preprocess_and_classify_all(PDF_DIR, PREPROC_DIR)
-
+```
 
 For each PDF:
 
-* Logical content and layout features are extracted
-* Graphs are built using layout and embedding features
-* Headings are classified via a trained GNN (best_model.pth)
+* Extracts logical structure
+* Builds graphs from layout & embeddings
+* Classifies heading levels using the trained GNN
 
-2. *Heading Ranking + Subsection Extraction*
+### 2️⃣ Semantic Ranking + Subsection Extraction
 
-bash
+```python
 final = build_final_json(recs, PERSONA, JOB_TO_BE_DONE, TOP_K)
+```
 
+* Uses embeddings to find top-k relevant headings
+* Extracts \~50-word subsections under each heading
 
-* Embeddings of headings and the user's task prompt are compared
-* Top-k headings are ranked by semantic relevance
-* Subsections under each heading are extracted (max 50 words)
+### 3️⃣ Final Output
 
-3. *Output JSON*
-
-Final structured JSON is saved as final_output_1B.json.
+```json
+{
+  "title": "Your PDF Title",
+  "content": [
+    {"level": "H1", "text": "Abstract", "page": 0},
+    {"level": "H2", "text": "Introduction", "page": 1},
+    ...
+  ]
+}
+```
 
 ---
 
-## 🧾 Sample Output (final_output_1B.json)
+## 🐳 Docker Usage
 
-json
+Build and run the pipeline in a Docker container.
+
+### 1️⃣ Build the Docker Image
+
+```bash
+docker build --platform linux/amd64 -t challenge1b-runner .
+```
+
+### 2️⃣ Run the Container
+
+```bash
+docker run --rm \
+  -v "$(pwd)/Collection 3:/app/input:ro" \
+  -v "$(pwd)/Collection 3/challenge1b_output:/app/output" \
+  challenge1b-runner
+```
+
+✅ Your JSON outputs will be in: `Collection 3/challenge1b_output/`
+
+---
+
+## 🧾 Sample Final Output (`final_output_1B.json`)
+
+```json
 {
   "metadata": {
     "input_documents": ["example.pdf"],
@@ -137,53 +180,54 @@ json
     }
   ]
 }
-
+```
 
 ---
 
 ## 🧠 Model Details
 
-The *heading classifier* is a 2-layer GraphSAGE model trained on node features that include:
+Heading classification is performed by a 2-layer **GraphSAGE** model using:
 
 * Relative font size
 * Word count
-* x/y layout position
-* Font style (bold/type)
-* 384-dimensional MiniLM text embedding
+* x/y position on page
+* Bold/font style
+* 384-d MiniLM text embeddings
 
-### Class Labels:
+### Labels:
 
-* H1 → Primary heading
-* H2 → Sub-heading
-* H3 → Minor sub-heading
-* O  → Other (non-heading)
-
----
-
-## 🔁 Re-training the Model
-
-If you want to re-train the GNN model:
-
-1. Prepare labeled graphs.
-2. Define HeadingClassifier (already included).
-3. Train using standard PyTorch/DGL training loop.
+* `H1` – Main heading
+* `H2` – Sub-heading
+* `H3` – Minor heading
+* `O`  – Other / Not a heading
 
 ---
 
+## 🧠 Re-training the Model
+
+To retrain:
+
+1. Prepare labeled graph data
+2. Use `HeadingClassifier` class (already implemented)
+3. Run a typical PyTorch training loop using `DGL`
 
 ---
 
-## 📌 Notes
+## ⚠️ Notes
 
-* Only works on *text-based PDFs* (not scanned/image-based).
-* Performance improves with higher-quality structured documents.
-* Ensure best_model.pth is available in the root directory.
+* Works only on **text-based PDFs** (not scanned images)
+* Results improve with structured documents
+* Ensure `best_model.pth` is present in root before running
 
 ---
 
-## 🧾 Citation / Credits
+## 📚 Citations / Credits
 
-* [SentenceTransformer]("mixedbread-ai/mxbai-embed-large-v1"
-* [Unstructured](https://github.com/Unstructured-IO/unstructured)
-* [DGL](https://www.dgl.ai/)
-* [PyMuPDF](https://pymupdf.readthedocs.io/)
+* 🔗 [SentenceTransformers](https://www.sbert.net/)
+* 🔗 [Unstructured.io](https://github.com/Unstructured-IO/unstructured)
+* 🔗 [DGL.ai](https://www.dgl.ai/)
+* 🔗 [PyMuPDF](https://pymupdf.readthedocs.io/)
+
+---
+
+Let me know if you'd like this as a downloadable `README.md` file or need badges/logos for GitHub styling.
